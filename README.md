@@ -1,4 +1,4 @@
-# KiCad Rounded Rectangle Board Outline Plugin
+# KiCad Round Edgecut Plugin
 
 A professional Python-based Action Plugin for KiCad 7.0 and 8.0 that automatically generates a precisely centered, rounded rectangle board outline directly on the `Edge.Cuts` layer.
 
@@ -37,7 +37,7 @@ Open the KiCad PCB Editor (`pcbnew`) and click **Tools -> External Plugins -> Re
 
 ## Usage
 1. Open your PCB in KiCad.
-2. Click the **Rounded Rectangle Outline** button in the top toolbar (or via `Tools -> External Plugins`).
+2. Click the **Round Edgecut** button in the top toolbar (or via `Tools -> External Plugins`).
 3. Enter your desired Width, Height, and Radius.
 4. Check the preview.
 5. Hit **OK** to generate the perfect outline!

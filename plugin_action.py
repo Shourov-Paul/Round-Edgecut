@@ -13,7 +13,7 @@ def rm_edge_cuts(board):
 
 class RoundedRectOutlinePlugin(pcbnew.ActionPlugin):
     def defaults(self):
-        self.name = "Rounded Rectangle Outline"
+        self.name = "Round Edgecut"
         self.category = "Modify PCB"
         self.description = "Generates a rounded rectangle board outline on the Edge.Cuts layer"
         self.show_toolbar_button = True

@@ -3,7 +3,7 @@
     "name": "Round Edgecut",
     "description": "Generates a rounded rectangle board outline on the Edge.Cuts layer",
     "description_full": "A Python Action Plugin that generates a precisely centered, rounded rectangle board outline directly on the Edge.Cuts layer with a live preview. Also allows manual placement by sticking the generated shape to the cursor.",
-    "identifier": "com.github.yourusername.round-edgecut-plugin",
+    "identifier": "com.github.shourov-paul.round-edgecut-plugin",
     "type": "plugin",
     "author": {
         "name": "Shourov Paul",

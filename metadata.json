@@ -20,10 +20,10 @@
             "version": "1.0.0",
             "status": "stable",
             "kicad_version": "9.0",
-            "download_sha256": "WILL_BE_FILLED_LATER",
-            "download_size": 0,
+            "download_sha256": "8C34EDADDABD5F1519CA16B8BB9A6C2AA91B9750CF7B021518634CBB50C5B695",
+            "download_size": 19263,
             "download_url": "https://github.com/Shourov-Paul/Round-Edgecut/archive/refs/tags/v1.0.0.zip",
-            "install_size": 0
+            "install_size": 31798
         }
     ]
 }

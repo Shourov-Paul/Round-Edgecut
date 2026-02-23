@@ -84,7 +84,7 @@ class RoundedRectOutlinePlugin(pcbnew.ActionPlugin):
             
             pcbnew.Refresh()
 
-    def add_line(self, board, x1, y1, x2, y2):
+    def add_line(self, board, x1, y1, x2, y2, drawn_items):
         line = pcbnew.PCB_SHAPE(board)
         line.SetShape(pcbnew.SHAPE_T_SEGMENT)
         line.SetLayer(pcbnew.Edge_Cuts)
@@ -93,8 +93,9 @@ class RoundedRectOutlinePlugin(pcbnew.ActionPlugin):
         line.SetStart(pcbnew.VECTOR2I(int(x1), int(y1)))
         line.SetEnd(pcbnew.VECTOR2I(int(x2), int(y2)))
         board.Add(line)
+        drawn_items.append(line)
 
-    def add_arc(self, board, cx, cy, sx, sy, angle_deg):
+    def add_arc(self, board, cx, cy, sx, sy, angle_deg, drawn_items):
         arc = pcbnew.PCB_SHAPE(board)
         arc.SetShape(pcbnew.SHAPE_T_ARC)
         arc.SetLayer(pcbnew.Edge_Cuts)
@@ -113,6 +114,7 @@ class RoundedRectOutlinePlugin(pcbnew.ActionPlugin):
             arc.SetArcAngleAndEnd(int(angle_deg * 10))
             
         board.Add(arc)
+        drawn_items.append(arc)
 
     def generate_outline(self, board, w_mm, h_mm, r_mm, cx_mm, cy_mm):
         # Convert all mm values to Internal Units (IU)
@@ -122,23 +124,25 @@ class RoundedRectOutlinePlugin(pcbnew.ActionPlugin):
         cx = pcbnew.FromMM(cx_mm)
         cy = pcbnew.FromMM(cy_mm)
         
+        drawn_items = []
+        
         # 1. Draw the 4 straight edge segments
         
         # Top edge
         if W > 2*R:
-            self.add_line(board, cx - W/2 + R, cy - H/2, cx + W/2 - R, cy - H/2)
+            self.add_line(board, cx - W/2 + R, cy - H/2, cx + W/2 - R, cy - H/2, drawn_items)
             
         # Right edge
         if H > 2*R:
-            self.add_line(board, cx + W/2, cy - H/2 + R, cx + W/2, cy + H/2 - R)
+            self.add_line(board, cx + W/2, cy - H/2 + R, cx + W/2, cy + H/2 - R, drawn_items)
             
         # Bottom edge
         if W > 2*R:
-            self.add_line(board, cx + W/2 - R, cy + H/2, cx - W/2 + R, cy + H/2)
+            self.add_line(board, cx + W/2 - R, cy + H/2, cx - W/2 + R, cy + H/2, drawn_items)
             
         # Left edge
         if H > 2*R:
-            self.add_line(board, cx - W/2, cy + H/2 - R, cx - W/2, cy - H/2 + R)
+            self.add_line(board, cx - W/2, cy + H/2 - R, cx - W/2, cy - H/2 + R, drawn_items)
 
         # 2. Draw the 4 rounded corner arcs (if R > 0)
         
@@ -149,22 +153,30 @@ class RoundedRectOutlinePlugin(pcbnew.ActionPlugin):
             self.add_arc(board, 
                          cx + W/2 - R, cy - H/2 + R, # Center
                          cx + W/2 - R, cy - H/2,     # Start (tangent to top edge)
-                         90)
+                         90,
+                         drawn_items)
                          
             # Bottom-Right corner arc
             self.add_arc(board, 
                          cx + W/2 - R, cy + H/2 - R, # Center
                          cx + W/2, cy + H/2 - R,     # Start (tangent to right edge)
-                         90)
+                         90,
+                         drawn_items)
                          
             # Bottom-Left corner arc
             self.add_arc(board, 
                          cx - W/2 + R, cy + H/2 - R, # Center
                          cx - W/2 + R, cy + H/2,     # Start (tangent to bottom edge)
-                         90)
+                         90,
+                         drawn_items)
                          
             # Top-Left corner arc
             self.add_arc(board, 
                          cx - W/2 + R, cy - H/2 + R, # Center
                          cx - W/2, cy - H/2 + R,     # Start (tangent to left edge)
-                         90)
+                         90,
+                         drawn_items)
+
+        # Select all newly drawn items so the user can easily move them
+        for item in drawn_items:
+            item.SetSelected()

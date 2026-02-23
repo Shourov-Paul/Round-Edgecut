@@ -22,6 +22,7 @@ class PreviewPanel(wx.Panel):
             w = float(self.dialog.width_ctrl.GetValue())
             h = float(self.dialog.height_ctrl.GetValue())
             r = float(self.dialog.radius_ctrl.GetValue())
+            angle = float(self.dialog.angle_ctrl.GetValue())
         except ValueError:
             return
             
@@ -47,8 +48,20 @@ class PreviewPanel(wx.Panel):
         dc.SetPen(self.pen)
         dc.SetBrush(wx.TRANSPARENT_BRUSH)
         
-        # Draw the rounded rectangle
-        dc.DrawRoundedRectangle(int(cx - draw_w/2), int(cy - draw_h/2), int(draw_w), int(draw_h), int(draw_r))
+        # Use GraphicsContext for rotation capability
+        gc = wx.GraphicsContext.Create(dc)
+        if gc:
+            gc.SetPen(self.pen)
+            gc.SetBrush(wx.TRANSPARENT_BRUSH)
+            gc.Translate(cx, cy)
+            import math
+            gc.Rotate(math.radians(-angle)) # Negative because KiCad Y goes down, but preview should feel intuitive
+            
+            # Draw the rounded rectangle centered at 0,0 locally
+            gc.DrawRoundedRectangle(-draw_w/2, -draw_h/2, draw_w, draw_h, draw_r)
+        else:
+            # Fallback if GraphicsContext fails
+            dc.DrawRoundedRectangle(int(cx - draw_w/2), int(cy - draw_h/2), int(draw_w), int(draw_h), int(draw_r))
 
 
 class RoundedRectDialog(wx.Dialog):
@@ -62,18 +75,19 @@ class RoundedRectDialog(wx.Dialog):
         # Left side containing inputs and checkboxes
         left_sizer = wx.BoxSizer(wx.VERTICAL)
         
-        # Input grid
-        grid = wx.FlexGridSizer(3, 2, 10, 10)
+        grid = wx.FlexGridSizer(4, 2, 10, 10)
         grid.AddGrowableCol(1)
         
         self.width_ctrl = self._add_input(grid, "Width (mm):", str(config.get("width", 100.0)))
         self.height_ctrl = self._add_input(grid, "Height (mm):", str(config.get("height", 50.0)))
         self.radius_ctrl = self._add_input(grid, "Radius (mm):", str(config.get("radius", 5.0)))
+        self.angle_ctrl = self._add_input(grid, "Angle (deg):", str(config.get("angle", 0.0)))
         
         # Bind events for live preview updates
         self.width_ctrl.Bind(wx.EVT_TEXT, self.on_text_change)
         self.height_ctrl.Bind(wx.EVT_TEXT, self.on_text_change)
         self.radius_ctrl.Bind(wx.EVT_TEXT, self.on_text_change)
+        self.angle_ctrl.Bind(wx.EVT_TEXT, self.on_text_change)
         
         left_sizer.Add(grid, flag=wx.ALL | wx.EXPAND, border=10)
         
@@ -143,8 +157,9 @@ class RoundedRectDialog(wx.Dialog):
             w = float(self.width_ctrl.GetValue())
             h = float(self.height_ctrl.GetValue())
             r = float(self.radius_ctrl.GetValue())
+            a = float(self.angle_ctrl.GetValue())
         except ValueError:
-            w, h, r = 100.0, 50.0, 5.0
+            w, h, r, a = 100.0, 50.0, 5.0, 0.0
             
         try:
             px = float(self.pos_x_ctrl.GetValue())
@@ -158,6 +173,7 @@ class RoundedRectDialog(wx.Dialog):
             "width": w,
             "height": h,
             "radius": r,
+            "angle": a,
             "replace": self.replace_cb.GetValue(),
             "use_custom_pos": self.custom_pos_cb.GetValue(),
             "pos_x": px,
@@ -169,8 +185,9 @@ class RoundedRectDialog(wx.Dialog):
             w = float(self.width_ctrl.GetValue())
             h = float(self.height_ctrl.GetValue())
             r = float(self.radius_ctrl.GetValue())
+            a = float(self.angle_ctrl.GetValue())
         except ValueError:
-            wx.MessageBox("Please enter valid numbers for Width, Height, and Radius.", "Invalid Input", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox("Please enter valid numbers for Width, Height, Radius, and Angle.", "Invalid Input", wx.OK | wx.ICON_ERROR)
             return
 
         if self.custom_pos_cb.GetValue():

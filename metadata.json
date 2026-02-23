@@ -6,14 +6,14 @@
     "identifier": "com.github.yourusername.round-edgecut-plugin",
     "type": "plugin",
     "author": {
-        "name": "Your Name",
+        "name": "Shourov Paul",
         "contact": {
-            "web": "https://github.com/yourusername/round_edgecut_plugin"
+            "web": "https://github.com/Shourov-Paul/Round-Edgecut"
         }
     },
     "license": "MIT",
     "resources": {
-        "homepage": "https://github.com/yourusername/round_edgecut_plugin"
+        "homepage": "https://github.com/Shourov-Paul/Round-Edgecut"
     },
     "versions": [
         {
@@ -22,7 +22,7 @@
             "kicad_version": "9.0",
             "download_sha256": "WILL_BE_FILLED_LATER",
             "download_size": 0,
-            "download_url": "https://github.com/yourusername/round_edgecut_plugin/archive/refs/tags/v1.0.0.zip",
+            "download_url": "https://github.com/Shourov-Paul/Round-Edgecut/archive/refs/tags/v1.0.0.zip",
             "install_size": 0
         }
     ]

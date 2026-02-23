@@ -30,6 +30,7 @@ class RoundedRectOutlinePlugin(pcbnew.ActionPlugin):
             "width": 100.0,
             "height": 50.0,
             "radius":  5.0,
+            "angle": 0.0,
             "replace": True,
             "use_custom_pos": False,
             "pos_x": 0.0,
@@ -56,6 +57,7 @@ class RoundedRectOutlinePlugin(pcbnew.ActionPlugin):
             width = params["width"]
             height = params["height"]
             radius = params["radius"]
+            angle_deg = params["angle"]
             replace = params["replace"]
             use_custom_pos = params["use_custom_pos"]
             pos_x = params["pos_x"]
@@ -80,7 +82,7 @@ class RoundedRectOutlinePlugin(pcbnew.ActionPlugin):
                     cx_mm = 297.0 / 2.0
                     cy_mm = 210.0 / 2.0
                 
-            self.generate_outline(board, width, height, radius, cx_mm, cy_mm)
+            self.generate_outline(board, width, height, radius, angle_deg, cx_mm, cy_mm)
             
             pcbnew.Refresh()
 
@@ -116,7 +118,7 @@ class RoundedRectOutlinePlugin(pcbnew.ActionPlugin):
         board.Add(arc)
         drawn_items.append(arc)
 
-    def generate_outline(self, board, w_mm, h_mm, r_mm, cx_mm, cy_mm):
+    def generate_outline(self, board, w_mm, h_mm, r_mm, angle_user_deg, cx_mm, cy_mm):
         # Convert all mm values to Internal Units (IU)
         W = pcbnew.FromMM(w_mm)
         H = pcbnew.FromMM(h_mm)
@@ -176,6 +178,19 @@ class RoundedRectOutlinePlugin(pcbnew.ActionPlugin):
                          cx - W/2, cy - H/2 + R,     # Start (tangent to left edge)
                          90,
                          drawn_items)
+
+        # Apply rotation if any
+        if angle_user_deg != 0.0:
+            center_pt = pcbnew.VECTOR2I(int(cx), int(cy))
+            if hasattr(pcbnew, 'EDA_ANGLE'):
+                # KiCad 7 and 8 API
+                angle_eda = pcbnew.EDA_ANGLE(angle_user_deg, pcbnew.DEGREES_T)
+                for item in drawn_items:
+                    item.Rotate(center_pt, angle_eda)
+            else:
+                # KiCad 6 and earlier fallback
+                for item in drawn_items:
+                    item.Rotate(center_pt, angle_user_deg * 10.0)
 
         # Select all newly drawn items so the user can easily move them
         for item in drawn_items:

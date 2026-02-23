@@ -1,3 +1,28 @@
-__pycache__/
-*.pyc
+# KiCad Plugin specific
 config.json
+*.zip
+
+# Python Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PyInstaller
+*.manifest
+*.spec
+
+# VS Code / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
